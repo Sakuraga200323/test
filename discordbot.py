@@ -78,4 +78,16 @@ async def on_message(message):
         import_value = int(worksheet.acell(cell).value)
         await m_ch.send(import_value)
 
+
+'''
+    if m_ctt.startswith("^^c "):
+        pattern = r"^\^\^c (\w+)"
+        result = re.search(pattern, m_ctt)
+        if result:
+            command = result.group(1)
+            if not command in ["","","",""]
+
+'''
+
+
 client.run(TOKEN)
