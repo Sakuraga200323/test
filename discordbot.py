@@ -35,7 +35,7 @@ worksheet = gc.open_by_key(SPREADSHEET_KEY).sheet1
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name="Test版"))
+    await client.change_presence(activity=discord.Game(name=f"^^help|機能停止中|{len(client.guilds)}の鯖が導入|"))
     NOW = datetime.now(JST).strftime("%Y/%m/%d %H:%M:%S")
     # MEM = psutil.virtual_memory().percent
     LOG_CHANNELS = [i for i in client.get_all_channels() if i.name == "bit起動ログ"]
@@ -68,6 +68,9 @@ async def on_message(message):
     m_guild = message.guild
     m_author = message.author
 
+    
+    if m_ct.startswith("^^"):
+        await m_ch.send("現在停止中です。")
     
     if m_ctt.startswith("^^test "):
         cell = m_ctt.split("test ")[1]
