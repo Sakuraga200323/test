@@ -21,7 +21,10 @@ async def on_message(message):
 
 
     if message.content=='^^ping':
-        await message.channel.send(embed=discord.Embed(title=f'**Pong!\n{(client.latency)*1000}ms**'))
+        await message.channel.send(embed=discord.Embed(
+            title=f'Pong!',
+            description=f"`{round(client.latency)*1000, 2}ms`")
+        )
     
 
 
