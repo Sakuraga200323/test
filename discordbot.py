@@ -28,6 +28,9 @@ async def on_message(message):
             title=f'Pong!',
             description=f"`{round((client.latency)*1000, 2)}ms`")
         )
+ 
+@client.event
+async def on_raw_reaction_add(payload):
     
     # channel_id から Channel オブジェクトを取得
     channel = client.get_channel(payload.channel_id)
