@@ -52,7 +52,7 @@ async def on_raw_reaction_add(payload):
     await member.add_roles(role)
 
     # 分かりやすいように歓迎のメッセージを送る
-    m = await channel.send(f'{role.mention}を{member.mention}に付与！')
+    m = await channel.send(f'`{role.name}`を{member.mention}に付与！')
     await asyncio.sleep(5)
     await m.delete()
 
