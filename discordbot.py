@@ -60,7 +60,7 @@ async def on_message(message):
 
         # レコードを生年月日の降順で取得する
         for row in c.execute('SELECT * FROM users ORDER BY birtyday DESC'):
-            await m_ch.send(f"{row}")
+            await message.channel.send(f"{row}")
 
         # データベースへのアクセスが終わったら close する
         conn.close()
