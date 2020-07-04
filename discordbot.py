@@ -29,11 +29,11 @@ async def on_message(message):
             title=f'Pong!',
             description=f"`{round((client.latency)*1000, 2)}ms`"))
 
-    if message.content=='^^ping2':
+    if message.content == '^^ping2':
         await message.channel.send(embed=discord.Embed(
             title=f'Pong!',
             description=f"`{(client.latency)*1000, 2)}ms`")
-        
+
     if message.content == "^^makedb ":
         name = message.content.split(" ")[1]
         await message.channel.send(f"{name}")
