@@ -30,9 +30,34 @@ async def on_message(message):
             description=f"`{round((client.latency)*1000, 2)}ms`"))
 
     if message.content == '^^ping2':
-        await message.channel.send(embed=discord.Embed(
-            title=f'Pong!',
-            description=f"`{(client.latency)*1000, 2)}ms`")
+        await message.channel.send(
+            embed=discord.Embed(
+                title=f'Pong!',
+                description=f"`{(client.latency)*1000, 2}ms`"
+            )
+        )
+
+    if message.content == "^^makedb ":
+        name = message.content.split(" ")[1]
+        await message.channel.send(f"{name}")
+
+        # データベースに接続する
+        conn = sqlite3.connect(f'{name}.db')
+        c = conn.cursor()
+
+        # テーブルの作成
+        c.execute('''CREATE TABLE users(id real, name text, birtyday text)''')
+
+        # データの挿入
+        c.execute("INSERT INTO users VALUES (1, '煌木 太郎', '2001-01-01')")
+        c.execute("INSERT INTO users VALUES (2, '学習 次郎', '2006-05-05')")
+        c.execute("INSERT INTO users VALUES (3, '牌存 花子', '2017-09-10')")
+
+        # 挿入した結果を保存（コミット）する
+        conn.commit()
+
+        # データベースへのアクセスが終わったら close する
+        conn.close()
 
     if message.content == "^^connectdb ":
         name = message.content.split(" ")[1]
