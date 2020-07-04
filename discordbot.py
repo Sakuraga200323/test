@@ -46,12 +46,11 @@ async def on_message(message):
         c = conn.cursor()
 
         # テーブルの作成
-        c.execute('''CREATE TABLE users(id real, name text, birtyday text)''')
+        c.execute('''CREATE TABLE users(player_id real, level num)''')
 
         # データの挿入
-        c.execute("INSERT INTO users VALUES (1, '煌木 太郎', '2001-01-01')")
-        c.execute("INSERT INTO users VALUES (2, '学習 次郎', '2006-05-05')")
-        c.execute("INSERT INTO users VALUES (3, '牌存 花子', '2017-09-10')")
+        c.execute("INSERT INTO users VALUES (000000000, 1)")
+        c.execute("INSERT INTO users VALUES (000000001, 100)")
 
         # 挿入した結果を保存（コミット）する
         conn.commit()
@@ -68,7 +67,7 @@ async def on_message(message):
         c = conn.cursor()
 
         # レコードを生年月日の降順で取得する
-        for row in c.execute('SELECT * FROM users ORDER BY birtyday DESC'):
+        for row in c.execute('SELECT * FROM users'):
             await message.channel.send(f"{row}")
 
         # データベースへのアクセスが終わったら close する
