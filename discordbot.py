@@ -6,6 +6,7 @@ import re
 import ast
 import gspread
 import json
+import sqlite3
 from oauth2client.service_account import ServiceAccountCredentials 
 # import psutil
 import traceback
@@ -28,6 +29,41 @@ async def on_message(message):
             title=f'Pong!',
             description=f"`{round((client.latency)*1000, 2)}ms`")
         )
+
+    if message.content == "^^makedb ":
+        name = message.content.split(" ")[1]
+
+        # データベースに接続する
+        conn = sqlite3.connect(f'{name}.db')
+        c = conn.cursor()
+
+        # テーブルの作成
+        c.execute('''CREATE TABLE users(id real, name text, birtyday text)''')
+
+        # データの挿入
+        c.execute("INSERT INTO users VALUES (1, '煌木 太郎', '2001-01-01')")
+        c.execute("INSERT INTO users VALUES (2, '学習 次郎', '2006-05-05')")
+        c.execute("INSERT INTO users VALUES (3, '牌存 花子', '2017-09-10')")
+
+        # 挿入した結果を保存（コミット）する
+        conn.commit()
+
+        # データベースへのアクセスが終わったら close する
+        conn.close()
+
+    if message.content == "^^connectdb ":
+        name = message.content.split(" ")[1]
+
+        # データベースに接続する
+        conn = sqlite3.connect(f'{name}.db')
+        c = conn.cursor()
+
+        # レコードを生年月日の降順で取得する
+        for row in c.execute('SELECT * FROM users ORDER BY birtyday DESC'):
+            await m_ch.send(f"{row}")
+
+        # データベースへのアクセスが終わったら close する
+        conn.close()
  
 @client.event
 async def on_raw_reaction_add(payload):
