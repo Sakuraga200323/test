@@ -22,7 +22,9 @@ ID_ROLE_WELCOME = 719176372773453835 # 付けたい役職のID
 
 @client.event
 async def on_message(message):
-
+    if message.content.startswith(''):#!SHUTDOWN_BOTが入力されたら強制終了
+        await client.logout()
+        await sys.exit()
 
     if message.content=='^^ping':
         await message.channel.send(embed=discord.Embed(
