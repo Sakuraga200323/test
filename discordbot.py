@@ -37,7 +37,7 @@ async def on_message(message):
             )
         )
 
-    if message.content == "^^makedb ":
+    if message.content.startswith("^^makedb "):
         name = message.content.split(" ")[1]
         await message.channel.send(f"{name}")
 
@@ -59,7 +59,7 @@ async def on_message(message):
         # データベースへのアクセスが終わったら close する
         conn.close()
 
-    if message.content == "^^connectdb ":
+    if message.content.startswith("^^connectdb "):
         name = message.content.split(" ")[1]
         await message.channel.send(f"{name}")
 
