@@ -32,7 +32,7 @@ async def on_message(message):
     if message.content == '^^ping2':
         await message.channel.send(embed=discord.Embed(
             title=f'Pong!',
-            description=f"`{(client.latency)*1000, 2)}ms`"))
+            description=f"`{(client.latency)*1000, 2)}ms`")
 
     if message.content == "^^makedb ":
         name = message.content.split(" ")[1]
