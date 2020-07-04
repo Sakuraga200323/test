@@ -32,6 +32,7 @@ async def on_message(message):
 
     if message.content == "^^makedb ":
         name = message.content.split(" ")[1]
+        await message.channel.send(f"{name}")
 
         # データベースに接続する
         conn = sqlite3.connect(f'{name}.db')
@@ -53,6 +54,7 @@ async def on_message(message):
 
     if message.content == "^^connectdb ":
         name = message.content.split(" ")[1]
+        await message.channel.send(f"{name}")
 
         # データベースに接続する
         conn = sqlite3.connect(f'{name}.db')
