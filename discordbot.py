@@ -39,6 +39,7 @@ async def on_message(message):
 
     if message.content.startswith("^^makedb "):
         name = message.content.split(" ")[1]
+        table_name = message.content.split(" ")[2]
         await message.channel.send(f"{name}")
 
         # データベースに接続する
@@ -46,7 +47,7 @@ async def on_message(message):
         c = conn.cursor()
 
         # テーブルの作成
-        c.execute('''CREATE TABLE users(player_id real, level num)''')
+        c.execute(f'''CREATE TABLE {table_name}(player_id num, level num)''')
 
         # データの挿入
         c.execute("INSERT INTO users VALUES (000000000, 1)")
@@ -60,6 +61,7 @@ async def on_message(message):
 
     if message.content.startswith("^^connectdb "):
         name = message.content.split(" ")[1]
+        table_name = message.content.split(" ")[2]
         await message.channel.send(f"{name}")
 
         # データベースに接続する
@@ -67,7 +69,7 @@ async def on_message(message):
         c = conn.cursor()
 
         # レコードを生年月日の降順で取得する
-        for row in c.execute('SELECT * FROM users'):
+        for row in c.execute(f'SELECT * FROM {table_name}'):
             await message.channel.send(f"{row}")
 
         # データベースへのアクセスが終わったら close する
