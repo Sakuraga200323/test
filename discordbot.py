@@ -6,7 +6,7 @@ import re
 import ast
 import gspread
 import json
-import sqlite3
+import redis
 from oauth2client.service_account import ServiceAccountCredentials 
 # import psutil
 import traceback
@@ -19,6 +19,11 @@ client = discord.Client()
 ID_CHANNEL_README = 725486353151819899 # 該当のチャンネルのID
 ID_ROLE_WELCOME = 719176372773453835 # 付けたい役職のID
 
+def connect():
+    return redis.from_url(
+        url=os.environ.get('REDIS_URL'), # 環境変数にあるURLを渡す
+        decode_responses=True, # 日本語の文字化け対策のため必須
+    )
 
 @client.event
 async def on_message(message):
@@ -39,44 +44,29 @@ async def on_message(message):
             )
         )
 
-    if message.content.startswith("^^makedb "):
-        name = message.content.split(" ")[1]
-        table_name = message.content.split(" ")[2]
-        await message.channel.send(f"{name}")
+    if message.content.startswith("^^adddb "):
+        key = message.content.split(" ")[1]
+        value = message.content.split(" ")[2]
+        await message.channel.send(f"Key:{key}\nValue:{value}")
+        if conn.exists(key) > 0:
+            await message.channel.send(f"Key:{key}は登録済みです。")
+            return
+        result = conn.set(f'{key}', f'{value}')
 
-        # データベースに接続する
-        conn = sqlite3.connect(f'{name}.db')
-        c = conn.cursor()
+    if message.content.startswith("^^getdb "):
+        key = message.content.split(" ")[1]
+        await message.channel.send(f"Key:{key}")
+        result = conn.get(key)
+        if not result:
+            await message.channel.send(f"Key:{key}は未登録です。")
+            return
+        await message.channel.send(f"Key:{key}\Value{result}")
+            
 
-        # テーブルの作成
-        c.execute(f'''CREATE TABLE {table_name}(player_id num, level num)''')
 
-        # データの挿入
-        c.execute("INSERT INTO users VALUES (000000000, 1)")
-        c.execute("INSERT INTO users VALUES (000000001, 100)")
-
-        # 挿入した結果を保存（コミット）する
-        conn.commit()
-
-        # データベースへのアクセスが終わったら close する
-        conn.close()
-
-    if message.content.startswith("^^connectdb "):
-        name = message.content.split(" ")[1]
-        table_name = message.content.split(" ")[2]
-        await message.channel.send(f"{name}")
-
-        # データベースに接続する
-        conn = sqlite3.connect(f'{name}.db')
-        c = conn.cursor()
-
-        # レコードを生年月日の降順で取得する
-        for row in c.execute(f'SELECT * FROM {table_name}'):
-            await message.channel.send(f"{row}")
-
-        # データベースへのアクセスが終わったら close する
-        conn.close()
  
+
+
 @client.event
 async def on_raw_reaction_add(payload):
     
