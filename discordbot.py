@@ -8,7 +8,10 @@ import gspread
 import json
 import redis
 from oauth2client.service_account import ServiceAccountCredentials 
-# import psutil
+from flask import Flask, render_template, g
+from hamlish_jinja import HamlishExtension
+from werkzeug import ImmutableDict
+from flask_sqlalchemy import SQLAlchemy
 import traceback
 from datetime import datetime, timedelta, timezone
 JST = timezone(timedelta(hours=+9), 'JST')
@@ -19,17 +22,29 @@ client = discord.Client()
 ID_CHANNEL_README = 725486353151819899 # 該当のチャンネルのID
 ID_ROLE_WELCOME = 719176372773453835 # 付けたい役職のID
 
-def connect():
-    return redis.from_url(
-        url=os.environ.get('REDIS_URL'), # 環境変数にあるURLを渡す
-        decode_responses=True, # 日本語の文字化け対策のため必須
+class FlaskWithHamlish(Flask):
+    jinja_options = ImmutableDict(
+        extensions=[HamlishExtension]
     )
+app = FlaskWithHamlish(__name__)
 
+db_uri = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+db = SQLAlchemy(app)
+
+class Entry(db.Model):
+    # テーブル名を定義
+    __tablename__ = "entries"
+
+    # カラムを定義
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(), nullable=False)
+    body = db.Column(db.String(), nullable=False)
+
+    
+    
 @client.event
 async def on_message(message):
-    if message.content.startswith(''):#!SHUTDOWN_BOTが入力されたら強制終了
-        await client.logout()
-        await sys.exit()
 
     if message.content=='^^ping':
         await message.channel.send(embed=discord.Embed(
@@ -47,20 +62,24 @@ async def on_message(message):
     if message.content.startswith("^^adddb "):
         key = message.content.split(" ")[1]
         value = message.content.split(" ")[2]
-        await message.channel.send(f"Key:{key}\nValue:{value}")
-        if conn.exists(key) > 0:
-            await message.channel.send(f"Key:{key}は登録済みです。")
-            return
-        result = conn.set(f'{key}', f'{value}')
-
+        # DBヘ接続
+        dsn = os.environ.get('DATABASE_URL')
+        conn = psycopg2.connect(dsn)
+        cur = conn.cursor()
+        #insert文実行(適宜読み替えてください)
+        cur.execute('BEGIN')
+        cur.execute("insert into entries values(1,'title', 'body', 'date:XX:YY:ZZ')")
+        cur.execute("insert into entries values(2,'title', 'body', 'date:XX:YY:ZZ')")
+        # データを取得する
+        cur.execute('SELECT * FROM entries')
+        for row in cur:
+            print(row[0])
+        cur.execute('COMMIT')
+        exit()        
+        
+        
     if message.content.startswith("^^getdb "):
         key = message.content.split(" ")[1]
-        await message.channel.send(f"Key:{key}")
-        result = conn.get(key)
-        if not result:
-            await message.channel.send(f"Key:{key}は未登録です。")
-            return
-        await message.channel.send(f"Key:{key}\Value{result}")
             
 
 
